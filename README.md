@@ -1,2 +1,2 @@
 # MTN-MOMO
-MTN MOMO API Integration
+MTN Mobile Money API Integration
