@@ -12,6 +12,14 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'defaultTimeZone' => 'UTC',
+            'currencyCode' => 'USD',
+            'numberFormatterOptions' => [
+                \NumberFormatter::CURRENCY => \NumberFormatter::CURRENCY_SYMBOL, // Use CURRENCY_SYMBOL directly
+            ],    
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'ViwMoThgua8_45ZPe0pQJJ7r0E9jFLYv',
@@ -24,7 +32,7 @@ $config = [
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+            'errorAction' => 'payment/error',
         ],
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
