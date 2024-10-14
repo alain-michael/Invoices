@@ -54,7 +54,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '' => 'payment/index',
+                '' => 'invoice/create',
             ],
         ],
     ],
