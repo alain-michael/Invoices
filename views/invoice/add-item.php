@@ -38,7 +38,7 @@ $this->title = 'Add New Item';
                     </div>
 
                     <div class="text-end">
-                        <?= Html::a('Cancel', ['list'], ['class' => 'btn btn-light me-2']) ?>
+                        <?= Html::a('Cancel', ['items'], ['class' => 'btn btn-light me-2']) ?>
                         <?= Html::submitButton('Save Item', ['class' => 'btn btn-primary px-4']) ?>
                     </div>
 
