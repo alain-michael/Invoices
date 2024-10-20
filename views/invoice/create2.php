@@ -1,239 +1,122 @@
 <?php
 
+use app\models\InvoiceItems;
+use app\models\Items;
 use yii\bootstrap5\ActiveForm;
 use wbraganca\dynamicform\DynamicFormWidget;
 use yii\helpers\Html;
-use \yii\web\JqueryAsset;
+use yii\helpers\ArrayHelper;
+use yii\web\JqueryAsset;
 
 JqueryAsset::register($this);
+
 
 $this->title = 'Create Invoice';
 ?>
 <style>
-    :root {
-        --primary-color: #007bff;
-        --secondary-color: #6c757d;
-        --success-color: #28a745;
-        --danger-color: #dc3545;
-        --light-gray: #f8f9fa;
-        --dark-gray: #343a40;
-    }
-
-    body {
-        font-family: 'Roboto', Arial, sans-serif;
-        background-color: var(--light-gray);
-        color: var(--dark-gray);
-    }
-
-    .invoice-form {
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        padding: 30px;
-        margin-top: 30px;
-    }
-
-    .invoice-form h2 {
-        color: var(--primary-color);
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 10px;
-        margin-bottom: 30px;
-    }
-
-    .invoice-form h4 {
-        color: var(--secondary-color);
-        margin-top: 30px;
-        margin-bottom: 20px;
-    }
-
-    .item {
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        transition: all 0.3s ease;
-    }
-
-    .item:hover {
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .item .card-header {
-        background-color: var(--light-gray);
-        border-bottom: none;
-    }
-
-    .item .card-body {
-        padding: 20px;
-    }
-
-    .btn-primary {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-
-    .btn-secondary {
-        background-color: var(--secondary-color);
-        border-color: var(--secondary-color);
-    }
-
-    .btn-success {
-        background-color: var(--success-color);
-        border-color: var(--success-color);
-    }
-
-    .btn-danger {
-        background-color: var(--danger-color);
-        border-color: var(--danger-color);
-    }
-
-    input[readonly] {
-        background-color: var(--light-gray) !important;
-    }
-
-    .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
-    }
-
-    .card-header .btn {
-        margin-left: 5px;
-    }
-
     .total-amount {
-        font-size: 1.2em;
-        font-weight: bold;
         text-align: right;
-        margin-top: 20px;
+        width: 100%;
+        display: block;
     }
-    .additional-charges {
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 20px;
-        margin-top: 30px;
-        margin-bottom: 30px;
-    }
-
-    .additional-charges h4 {
-        color: var(--secondary-color);
-        margin-bottom: 20px;
-    }
-
-    .charge-item {
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 15px;
-    }
-
 </style>
-</head>
+<div class="invoice-form mt-4 mx-4">
+    <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
 
-<body>
-    <div class="invoice-form container mt-4 w-75">
-        <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
-
-        <h2><?= Html::encode($this->title) ?></h2>
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <?= $form->field($model, 'customer_name')->textInput(['maxlength' => true]) ?>
-            </div>
-            <div class="col-md-6">
-                <?= $form->field($model, 'created_at')->input('date') ?>
-            </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->field($model, 'customer_name')->textInput(['maxlength' => true, 'class' => 'form-control'])->label('Customer Name') ?>
         </div>
+        <div class="col-md-6">
+            <?= $form->field($model, 'created_at')->input('date', ['class' => 'form-control'])->label('Invoice Date') ?>
+        </div>
+    </div>
 
-        <h4>Invoice Items</h4>
-        <?php DynamicFormWidget::begin([
-            'widgetContainer' => 'dynamicform_wrapper',
-            'widgetBody' => '.container-items',
-            'widgetItem' => '.item',
-            'limit' => 10,
-            'min' => 1,
-            'insertButton' => '.add-item',
-            'deleteButton' => '.remove-item',
-            'model' => $items[0],
-            'formId' => 'dynamic-form',
-            'formFields' => [
-                'name',
-                'quantity',
-                'price',
-                'item_amount',
-            ],
-        ]); ?>
+    <h4 class="mb-3">Invoice Items</h4>
+    <?php DynamicFormWidget::begin([
+        'widgetContainer' => 'dynamicform_wrapper',
+        'widgetBody' => '.container-items',
+        'widgetItem' => '.item',
+        'limit' => 10,
+        'min' => 1,
+        'insertButton' => '.add-item',
+        'deleteButton' => '.remove-item',
+        'model' => $items[0],
+        'formId' => 'dynamic-form',
+        'formFields' => [
+            'item_id',
+            'quantity',
+            'price',
+            'item_amount',
+        ],
+    ]); ?>
 
-        <div class="container-items mb-3">
-            <?php foreach ($items as $i => $item): ?>
-                <div class="item card mb-3">
-                    <div class="card-header d-flex justify-content-between align-items-center" style="background-color:#6c757d44;">
-                        <h5 class="card-title mb-0">Item <?= $i + 1 ?></h5>
-                        <div>
-                            <button type="button" class="add-item btn btn-success btn-sm"><i class="bi bi-plus"></i> Add</button>
-                            <button type="button" class="remove-item btn btn-danger btn-sm"><i class="bi bi-dash"></i> Remove</button>
-                        </div>
+    <div class="container-items">
+        <?php foreach ($items as $i => $item): ?>
+            <div class="item card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Item <?= $i + 1 ?></h5>
+                    <div>
+                        <button type="button" class="add-item btn btn-success btn-sm"><i class="bi bi-plus"></i> Add</button>
+                        <button type="button" class="remove-item btn btn-danger btn-sm"><i class="bi bi-dash"></i> Remove</button>
                     </div>
+                </div>
 
-                    <div class="collapse show">
-                        <div class="card-body">
-                            <?php if (!$item->isNewRecord): ?>
-                                <?= Html::activeHiddenInput($item, "[{$i}]id"); ?>
-                            <?php endif; ?>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <?= $form->field($item, "[{$i}]name")->textInput(['maxlength' => true]) ?>
-                                </div>
-                                <div class="col-md-2">
-                                    <?= $form->field($item, "[{$i}]quantity")->textInput(['type' => 'number', 'min' => '1']) ?>
-                                </div>
-                                <div class="col-md-2">
-                                    <?= $form->field($item, "[{$i}]price")->textInput(['type' => 'number', 'step' => '0.01', 'min' => '0']) ?>
-                                </div>
-                                <div class="col-md-2">
-                                    <?= $form->field($item, "[{$i}]item_amount")->textInput(['readonly' => true]) ?>
-                                </div>
-                            </div>
-
-                            <div class="row mt-3">
-                                <div class="col-md-12 text-end">
-                                    <button type="button" class="confirm-item btn btn-primary" disabled>Confirm Item</button>
-                                    <button type="button" class="edit-item btn btn-secondary d-none">Edit Item</button>
-                                </div>
-                            </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <?= $form->field($item, "[{$i}]id")->dropDownList(
+                                ArrayHelper::map(Items::find()->all(), 'id', function ($model) {
+                                    return $model->name . ' (Price: $' . $model->price . ')';
+                                }),
+                                ['prompt' => 'Select Item', 'class' => 'form-select item-select select2']
+                            ) ?>
+                        </div>
+                        <div class="col-md-2">
+                            <?= $form->field($item, "[{$i}]price")->textInput(['disabled' => true, 'readonly' => true, 'class' => 'form-control price-input'])->label('Price') ?>
+                        </div>
+                        <div class="col-md-2">
+                            <?= $form->field($item, "[{$i}]quantity")->textInput(['type' => 'number', 'min' => '1', 'class' => 'form-control quantity-input'])->label('Quantity') ?>
+                        </div>
+                        <div class="col-md-2">
+                            <?= $form->field($item, "[{$i}]item_amount")->textInput(['readonly' => true, 'class' => 'form-control amount-input'])->label('Amount') ?>
                         </div>
                     </div>
                 </div>
-            <?php endforeach; ?>
-        </div>
-        
-
-        <?php DynamicFormWidget::end(); ?>
-
-        <div class="additional-charges">
-            <h4>Additional Charges</h4>
-            <div id="charges-container">
-                <!-- Charges will be added here dynamically -->
             </div>
-            <button type="button" id="add-charge" class="btn btn-success btn-sm mt-2">
-                <i class="bi bi-plus"></i> Add Charge
-            </button>
-        </div>
-
-        <div class="total-amount">
-            Subtotal: <span id="invoice-subtotal">$0.00</span><br>
-            Additional Charges: <span id="additional-charges-total">$0.00</span><br>
-            Total: <span id="invoice-total">$0.00</span>
-        </div>
-
-        <div class="form-group mt-4">
-            <?= Html::submitButton($model->isNewRecord ? 'Create Invoice' : 'Update Invoice', ['class' => 'btn btn-primary']) ?>
-        </div>
-
-        <?php ActiveForm::end(); ?>
+        <?php endforeach; ?>
     </div>
 
-    <script>
+    <?php DynamicFormWidget::end(); ?>
+
+    <div class="additional-charges">
+        <h4>Additional Charges</h4>
+        <div id="charges-container">
+            <!-- Charges will be added here dynamically -->
+        </div>
+        <button type="button" id="add-charge" class="btn btn-success btn-sm mt-2">
+            <i class="bi bi-plus"></i> Add Charge
+        </button>
+    </div>
+
+    <div class="total-amount mt-3">
+        <h6>Subtotal: <span id="invoice-subtotal">$0.00</span><br></h6>
+        <h6>Additional Charges: <span id="additional-charges-total">$0.00</span><br></h6>
+        <div class="total-amount">
+            <h5>Total: <span id="invoice-total">$0.00</span></h5>
+        </div>
+    </div>
+
+
+
+    <div class="form-group mt-4">
+        <?= Html::submitButton('Create Invoice', ['class' => 'btn btn-primary btn-lg']) ?>
+    </div>
+
+    <?php ActiveForm::end(); ?>
+</div>
+
+<script>
     function addCharge() {
         const chargeContainer = document.getElementById('charges-container');
         const chargeIndex = chargeContainer.children.length || 0;
@@ -314,14 +197,6 @@ $this->title = 'Create Invoice';
         updateTotals();
     }
 
-    // Function to update the total invoice amount
-    // function updateInvoiceTotal() {
-    //     let total = 0;
-    //     document.querySelectorAll('input[name*="item_amount"]').forEach(function(input) {
-    //         total += parseFloat(input.value) || 0;
-    //     });
-    //     document.getElementById('invoice-total').textContent = '$' + total.toFixed(2);
-    // }
 
     // Update total when item amounts change
     document.addEventListener("input", function(event) {
@@ -338,162 +213,64 @@ $this->title = 'Create Invoice';
 
     // Initial call to set the total on page load
     updateInvoiceTotal();
+</script>
 
-    </script>
-    <?php
-    $js2 = <<<JS
-    // Function to enable Confirm button if all required fields are filled
-    function checkFields(card) {
-        const inputs = card.querySelectorAll('input[name*="[name]"], input[name*="[quantity]"], input[name*="[price]"]');
-        let allFilled = true;
-        inputs.forEach(function(input) {
-            if (!input.value.trim()) {
-                allFilled = false;
-            }
-        });
-        return allFilled;
-    }
+<?php
+$this->registerJs("
+    $('.dynamicform_wrapper').on('change', '.item-select', function() {
+        var row = $(this).closest('.item');
+        var priceInput = row.find('.price-input');
 
-    // Function to toggle Confirm button based on field values
-    function toggleConfirmButton(card) {
-        const confirmButton = card.querySelector('.confirm-item');
-        if (checkFields(card)) {
-            confirmButton.removeAttribute('disabled');
-        } else {
-            confirmButton.setAttribute('disabled', 'disabled');
-    }
-    }
-
-    // Handle field input events to check if all fields are filled
-    document.addEventListener("input", function(event) {
-        const card = event.target.closest('.item');
-        if (card) {
-            toggleConfirmButton(card);
-        }
-    });
-
-    function toggleCollapse() {
-        $('.card-header, .card-title').on('click', function(e) {
-        if ($(e.target).hasClass('add-item')) { 
-            return;
-        }
-
-        const card = e.target.closest('.card');
-        const cardBody = card.querySelector('.card .collapse');
-
-        if (cardBody.classList.contains('show')) {
-            $(cardBody).collapse('hide');
-        } else {
-            $(cardBody).collapse('show');
-        }
-});
-
-    }
-
-    toggleCollapse();
-
-    // Handle Confirm button click
-    document.addEventListener("click", function(event) {
-        if (event.target.classList.contains('confirm-item')) {
-            const card = event.target.closest('.card');
-            const cardBody = card.querySelector('.card .collapse');
-
-            // Check if all fields are filled
-            if (!checkFields(card)) {
-                alert('Please fill in all fields before confirming.');
-                return;
-            }
-
-            $('.card-title', card).text($('[name*="[name]"]', cardBody).val())
-
-            $(cardBody).collapse('hide');
-
-            // Disable the input fields
-            card.querySelectorAll('input').forEach(function(input) {
-                input.setAttribute('readonly', 'readonly');
-            });
-
-            // Change Confirm button to Edit button
-            event.target.textContent = 'Confirmed';
-            event.target.classList.add('btn-success');
-            event.target.setAttribute('readonly', 'readonly');
-
-            const editButton = card.querySelector('.edit-item');
-            editButton.classList.remove('d-none');
-        }
-    });
-
-    // Handle Edit button click to re-enable fields and expand the card
-    document.addEventListener("click", function(event) {
-        if (event.target.classList.contains('edit-item')) {
-            const card = event.target.closest('.card');
-            const cardBody = card.querySelector('.card-body');
-
-            $(cardBody).collapse('show');
-
-            // Enable the input fields for editing
-            card.querySelectorAll('input').forEach(function(input) {
-                if(/.*item_amount/.test(input.id)){
-                    return
-                }
-                input.removeAttribute('readonly');
-            });
-
-            // Show Confirm button again
-            const confirmButton = card.querySelector('.confirm-item');
-            confirmButton.textContent = 'Confirm Item';
-            confirmButton.classList.remove('btn-success');
-            confirmButton.removeAttribute('readonly');
-
-            // Hide Edit button
-            event.target.classList.add('d-none');
-        }
-    });
-
-    // Ensure all item labels are correctly numbered
-    function updateItemLabels() {
-        document.querySelectorAll('.dynamicform_wrapper .item').forEach(function (item, index) {
-            const itemTitle = item.querySelector('.card-title');
-            if (/Item \d+/.test(itemTitle.textContent)) {
-                itemTitle.textContent = 'Item ' + (index + 1);
-            }
-        });
-    }
-
-    // Trigger after adding a new item
-    $(".dynamicform_wrapper").on("afterInsert", function(e, item) {
-        updateItemLabels();
-        toggleCollapse();
-        $(item).find('input').val(''); 
-    });
-
-    // Trigger after removing an item
-    $(".dynamicform_wrapper").on("afterDelete", function(e) {
-        updateItemLabels(); 
-    });
+        var selectedOption = $(this).find('option:selected');
+        var priceText = selectedOption.text();
+        var price = priceText.match(/\\$(\\d+(\\.\\d{1,2})?)/);
         
-    document.addEventListener("input", function(event) {
-        if (event.target.closest('.dynamicform_wrapper .item')) {
-            const item = event.target.closest('.item');
-            const quantityInput = item.querySelector('input[name*="[quantity]"]');
-            const priceInput = item.querySelector('input[name*="[price]"]');
-            const amountInput = item.querySelector('input[name*="[item_amount]"]');
-
-            const quantity = parseFloat(quantityInput.value) || 0;
-            const price = parseFloat(priceInput.value) || 0;
-            const total = quantity * price;
-
-            amountInput.value = total.toFixed(2); 
+        if (price) {
+            priceInput.val(price[0].replace('$', ''));
+            updateAmount(row);
         }
     });
 
+    $('.dynamicform_wrapper').on('input', '.quantity-input', function() {
+        updateAmount($(this).closest('.item'));
+    });
 
+    function updateAmount(row) {
+        var price = parseFloat(row.find('.price-input').val()) || 0;
+        var quantity = parseInt(row.find('.quantity-input').val()) || 0;
+        var amount = price * quantity;
+        row.find('.amount-input').val(amount.toFixed(2));
+        updateTotal();
+    }
 
-    updateItemLabels();
-JS;
+    function updateTotal() {
+        var total = 0;
+        $('.amount-input').each(function() {
+            total += parseFloat($(this).val()) || 0;
+        });
+        $('#invoice-total').text('$' + total.toFixed(2));
+    }
 
-    $this->registerJs($js2);
-    ?>
-</body>
+    $('.dynamicform_wrapper').on('afterInsert', function(e, item) {
+        // Update item number
+        var itemCount = $('.container-items .item').length;
+        $(item).find('.card-title').text('Item ' + itemCount);
+        $(item).find('input').val('');
+        $(item).find('select').val('').trigger('change'); // Reset select2
+    });
 
-</html>
+    $('.dynamicform_wrapper').on('afterDelete', function(e) {
+        updateTotal();
+        // Update item numbers after deletion
+        $('.container-items .item').each(function(index) {
+            $(this).find('.card-title').text('Item ' + (index + 1));
+        });
+    });
+
+    // Initialize Select2 for existing and future selects
+    $('.select2').select2({
+        placeholder: 'Select an item',
+        allowClear: true
+    });
+");
+?>

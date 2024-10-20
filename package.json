@@ -1,0 +1,19 @@
+{
+  "name": "invoices",
+  "version": "1.0.0",
+  "description": "MTN Mobile Money API Integration",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "tailwindcss -i ./web/assets/css/tailwind.css -o ./web/css/tailwind.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.14"
+  }
+}

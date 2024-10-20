@@ -43,7 +43,7 @@ class Invoice extends \yii\db\ActiveRecord
                 'createdAtAttribute' => 'created_at',
                 'updatedAtAttribute' => false,
                 'value' => function () {
-                    return !empty($this->created_at) ? $this->created_at : date('Y-m-d');
+                    return !empty($this->created_at) ? $this->created_at : date('Y-m-d H:i:s');
                 },
             ]
         ];

@@ -12,6 +12,16 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
+        'assetManager' => [
+            'bundles' => [
+                'kartik\select2\Select2Asset' => [
+                    'bsVersion' => '5', // Set Bootstrap version to 5 for Select2
+                ],
+                'kartik\base\WidgetAsset' => [
+                    'bsVersion' => '5', // Set Bootstrap version to 5 for Kartik widgets
+                ],
+            ],
+        ],    
         'formatter' => [
             'class' => 'yii\i18n\Formatter',
             'defaultTimeZone' => 'UTC',
@@ -54,7 +64,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '' => 'invoice/create',
+                '' => 'invoice/index',
             ],
         ],
     ],
